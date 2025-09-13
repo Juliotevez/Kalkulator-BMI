@@ -1,73 +1,104 @@
-var age = document.getElementById("age");
-var height = document.getElementById("height");
-var weight = document.getElementById("weight");
-var male = document.getElementById("m");
-var female = document.getElementById("f");
-var form = document.getElementById("form");
-let resultArea = document.querySelector(".comment");
+document.getElementById("calculate").addEventListener("click", function () {
+  const weight = parseFloat(document.getElementById("weight").value);
+  const height = parseFloat(document.getElementById("height").value);
+  const age = parseInt(document.getElementById("age").value);
+  const gender = document.querySelector('input[name="gender"]:checked').value;
+  const resultEl = document.getElementById("result");
+  const bmiMeter = document.getElementById("bmiMeter");
+  const indicator = document.getElementById("indicator");
 
-modalContent = document.querySelector(".modal-content");
-modalText = document.querySelector("#modalText");
-var modal = document.getElementById("myModal");
-var span = document.getElementsByClassName("close")[0];
+  // Reset style
+  resultEl.className = "result";
 
-
-function calculate(){
- 
-  if(age.value=='' || height.value=='' || weight.value=='' || (male.checked==false && female.checked==false)){
-    modal.style.display = "block";
-    modalText.innerHTML = `All fields are required!`;
-
-  }else{
-    countBmi();
+  if (!weight || weight <= 0 || !height || height <= 0 || !age || age <= 0) {
+    resultEl.style.display = "block";
+    resultEl.textContent = "Masukkan berat, tinggi, dan umur dengan benar!";
+    resultEl.classList.add("obesitas");
+    bmiMeter.style.display = "none";
+    return;
   }
 
-}
+  const bmi = weight / (height / 100) ** 2;
+  const bmiRounded = bmi.toFixed(1);
 
+  let category = "";
+  let message = "";
 
-function countBmi(){
-  var p = [age.value, height.value, weight.value];
-  if(male.checked){
-    p.push("male");
-  }else if(female.checked){
-    p.push("female");
+  // Klasifikasi BMI
+  if (bmi < 18.5) {
+    category = "Kurus";
+    message =
+      gender === "pria"
+        ? "Kamu kurus. Tambahkan latihan beban ringan & asupan protein."
+        : "Kamu kurus. Coba yoga, pilates, dan pola makan seimbang.";
+    resultEl.classList.add("kurus");
+  } else if (bmi < 24.9) {
+    category = "Normal";
+    message =
+      gender === "pria"
+        ? "Mantap! Jaga dengan olahraga rutin: lari, gym, atau futsal."
+        : "Bagus! Jaga kesehatan dengan yoga, dance, atau jogging santai.";
+    resultEl.classList.add("normal");
+  } else if (bmi < 29.9) {
+    category = "Kelebihan Berat";
+    message =
+      gender === "pria"
+        ? "Sedikit berlebih. Coba rutin push-up, jogging, dan kurangi gorengan."
+        : "Sedikit berlebih. Ikuti zumba, aerobik, dan kontrol kalori.";
+    resultEl.classList.add("kelebihan");
+  } else {
+    category = "Obesitas";
+    message =
+      gender === "pria"
+        ? "Perhatian! Cobalah cardio (sepeda/lari) dan pola makan sehat."
+        : "Perhatian! Ikuti senam aerobik intensitas sedang & atur pola makan.";
+    resultEl.classList.add("obesitas");
   }
 
-  var bmi = Number(p[2])/(Number(p[1])/100*Number(p[1])/100);
-      
-  var result = '';
-  if(bmi<18.5){
-    result = 'Underweight';
-     }else if(18.5<=bmi&&bmi<=24.9){
-    result = 'Healthy';
-     }else if(25<=bmi&&bmi<=29.9){
-    result = 'Overweight';
-     }else if(30<=bmi&&bmi<=34.9){
-    result = 'Obese';
-     }else if(35<=bmi){
-    result = 'Extremely obese';
-     }
-
-
-
-resultArea.style.display = "block";
-document.querySelector(".comment").innerHTML = `You are <span id="comment">${result}</span>`;
-document.querySelector("#result").innerHTML = bmi.toFixed(2);
-
-}
-
-
-
-
-
-// When the user clicks on <span> (x), close the modal
-span.onclick = function() {
-  modal.style.display = "none";
-}
-
-// When the user clicks anywhere outside of the modal, close it
-window.onclick = function(event) {
-  if (event.target == modal) {
-    modal.style.display = "none";
+  // Modifikasi saran berdasarkan umur
+  if (age < 18) {
+    message +=
+      " Karena kamu masih remaja, pilih olahraga menyenangkan seperti basket, renang, atau bersepeda 🚴.";
+  } else if (age >= 40) {
+    message +=
+      " Karena usiamu di atas 40, pilih olahraga ringan seperti jalan kaki, yoga, atau berenang 🧘‍♀️.";
+  } else {
+    message += " Olahraga intensitas sedang–berat cocok untuk usiamu 💪.";
   }
+
+  resultEl.style.display = "block";
+  resultEl.textContent = `BMI: ${bmiRounded} (${category}) → ${message}`;
+
+  // Tampilkan BMI Meter
+bmiMeter.style.display = "block";
+
+// Map posisi indikator berdasarkan range BMI
+let position = 0;
+if (bmi <= 18.5) {
+  // Kurus (0–18.5) → 0–25%
+  position = (bmi / 18.5) * 25;
+} else if (bmi <= 24.9) {
+  // Normal (18.5–24.9) → 25–50%
+  position = 25 + ((bmi - 18.5) / (24.9 - 18.5)) * 25;
+} else if (bmi <= 29.9) {
+  // Kelebihan (25–29.9) → 50–75%
+  position = 50 + ((bmi - 25) / (29.9 - 25)) * 25;
+} else {
+  // Obesitas (30+) → 75–100%
+  position = 75 + Math.min(((bmi - 30) / 10) * 25, 25);
 }
+
+});
+
+document.getElementById("reset").addEventListener("click", function () {
+  document.getElementById("weight").value = "";
+  document.getElementById("height").value = "";
+  document.getElementById("age").value = "";
+  const resultEl = document.getElementById("result");
+  resultEl.style.display = "none";
+  resultEl.textContent = "";
+  resultEl.className = "result";
+
+  const bmiMeter = document.getElementById("bmiMeter");
+  bmiMeter.style.display = "none";
+});
