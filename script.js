@@ -7,7 +7,7 @@ document.getElementById("calculate").addEventListener("click", function () {
   const bmiMeter = document.getElementById("bmiMeter");
   const indicator = document.getElementById("indicator");
 
-  // Reset style
+  // Reset
   resultEl.className = "result";
 
   if (!weight || weight <= 0 || !height || height <= 0 || !age || age <= 0) {
@@ -55,15 +55,15 @@ document.getElementById("calculate").addEventListener("click", function () {
     resultEl.classList.add("obesitas");
   }
 
-  // Modifikasi saran berdasarkan umur
+  //  saran berdasarkan umur
   if (age < 18) {
     message +=
-      " Karena kamu masih remaja, pilih olahraga menyenangkan seperti basket, renang, atau bersepeda 🚴.";
+      " Karena kamu masih remaja, pilih olahraga menyenangkan seperti basket, renang, atau bersepeda .";
   } else if (age >= 40) {
     message +=
-      " Karena usiamu di atas 40, pilih olahraga ringan seperti jalan kaki, yoga, atau berenang 🧘‍♀️.";
+      " Karena usiamu di atas 40, pilih olahraga ringan seperti jalan kaki, yoga, atau berenang .";
   } else {
-    message += " Olahraga intensitas sedang–berat cocok untuk usiamu 💪.";
+    message += " Olahraga intensitas sedang–berat cocok untuk usiamu .";
   }
 
   resultEl.style.display = "block";
@@ -75,16 +75,12 @@ bmiMeter.style.display = "block";
 // Map posisi indikator berdasarkan range BMI
 let position = 0;
 if (bmi <= 18.5) {
-  // Kurus (0–18.5) → 0–25%
   position = (bmi / 18.5) * 25;
 } else if (bmi <= 24.9) {
-  // Normal (18.5–24.9) → 25–50%
   position = 25 + ((bmi - 18.5) / (24.9 - 18.5)) * 25;
 } else if (bmi <= 29.9) {
-  // Kelebihan (25–29.9) → 50–75%
   position = 50 + ((bmi - 25) / (29.9 - 25)) * 25;
 } else {
-  // Obesitas (30+) → 75–100%
   position = 75 + Math.min(((bmi - 30) / 10) * 25, 25);
 }
 
